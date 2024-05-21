@@ -32,7 +32,9 @@ class Puzzle():
             self.__AllowedSymbols = []
             self.__LoadPuzzle(args[0])
         else:
-            self.__Score = 0
+            self.__Score1 = 0
+            self.__Score2 = 0
+            self.player = ''
             self.__SymbolsLeft = args[1]
             self.__GridSize = args[0]
             self.__Grid = []
@@ -85,15 +87,18 @@ class Puzzle():
 
     def AttemptPuzzle(self):
         Finished = False
+        count = 1
         while not Finished:
+            if count %2 == 0:
+                self.player = 'Player 2'
+                print(f"Player 2's Current score: " + str(self.__Score2))
+            else:
+                self.player = 'Player 1'
+                print(f"Player 1's Current score: " + str(self.__Score1))
             self.DisplayPuzzle()
-            print("Current score: " + str(self.__Score))
+            print(f"{self.player}'s go: ")
             Row = -1
             Valid = False
-            undo_move = input("Do you want to undo the move (y/n)? ")
-            if undo_move == "y":
-                self.old_cell.ChangeSymbolInCell(self.old_symbol)
-                self.__Score -=3
             while not Valid:
                 try:
                     Row = int(input("Enter row number: "))
@@ -111,15 +116,17 @@ class Puzzle():
             Symbol = self.__GetSymbolFromUser()
             self.__SymbolsLeft -= 1
             CurrentCell = self.__GetCell(Row, Column)
-            self.old_symbol = CurrentCell.GetSymbol()
-            self.old_cell = CurrentCell
             if CurrentCell.CheckSymbolAllowed(Symbol):
                 CurrentCell.ChangeSymbolInCell(Symbol)
                 AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
                 if AmountToAddToScore > 0:
-                    self.__Score += AmountToAddToScore
+                    if self.player == 'Player 1':
+                        self.__Score1 += AmountToAddToScore
+                    else:
+                        self.__Score2 += AmountToAddToScore
             if self.__SymbolsLeft == 0:
                 Finished = True
+            count +=1
         print()
         self.DisplayPuzzle()
         print()

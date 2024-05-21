@@ -90,29 +90,29 @@ class Puzzle():
             print("Current score: " + str(self.__Score))
             Row = -1
             Valid = False
-            undo_move = input("Do you want to undo the move (y/n)? ")
-            if undo_move == "y":
-                self.old_cell.ChangeSymbolInCell(self.old_symbol)
-                self.__Score -=3
             while not Valid:
                 try:
                     Row = int(input("Enter row number: "))
-                    Valid = True
+                    if 0<Row<self.__GridSize:
+                        Valid = True
+                    else:
+                        print("Enter a valid row")
                 except:
-                    pass
+                    print("Please enter an integer")
             Column = -1
             Valid = False
             while not Valid:
                 try:
                     Column = int(input("Enter column number: "))
-                    Valid = True
+                    if 0 < Row < self.__GridSize:
+                        Valid = True
+                    else:
+                        print("Enter a valid row")
                 except:
-                    pass
+                    print("Please enter an integer")
             Symbol = self.__GetSymbolFromUser()
             self.__SymbolsLeft -= 1
             CurrentCell = self.__GetCell(Row, Column)
-            self.old_symbol = CurrentCell.GetSymbol()
-            self.old_cell = CurrentCell
             if CurrentCell.CheckSymbolAllowed(Symbol):
                 CurrentCell.ChangeSymbolInCell(Symbol)
                 AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)

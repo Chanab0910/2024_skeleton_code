@@ -90,10 +90,6 @@ class Puzzle():
             print("Current score: " + str(self.__Score))
             Row = -1
             Valid = False
-            undo_move = input("Do you want to undo the move (y/n)? ")
-            if undo_move == "y":
-                self.old_cell.ChangeSymbolInCell(self.old_symbol)
-                self.__Score -=3
             while not Valid:
                 try:
                     Row = int(input("Enter row number: "))
@@ -111,8 +107,6 @@ class Puzzle():
             Symbol = self.__GetSymbolFromUser()
             self.__SymbolsLeft -= 1
             CurrentCell = self.__GetCell(Row, Column)
-            self.old_symbol = CurrentCell.GetSymbol()
-            self.old_cell = CurrentCell
             if CurrentCell.CheckSymbolAllowed(Symbol):
                 CurrentCell.ChangeSymbolInCell(Symbol)
                 AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
@@ -146,19 +140,23 @@ class Puzzle():
                     PatternString += self.__GetCell(StartRow - 2, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow - 1, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow - 1, StartColumn + 1).GetSymbol()
+
+
                     for P in self.__AllowedPatterns:
                         CurrentSymbol = self.__GetCell(Row, Column).GetSymbol()
-                        if P.MatchesPattern(PatternString, CurrentSymbol):
-                            self.__GetCell(StartRow, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow - 1, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow - 2, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow - 2, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow - 2, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow - 1, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
-                            self.__GetCell(StartRow - 1, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
-                            return 10
+                        rotated_patterns = P.rotate(PatternString)
+                        for rotate in rotated_patterns:
+                            if P.MatchesPattern(rotate, CurrentSymbol):
+                                self.__GetCell(StartRow, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow - 1, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow - 2, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow - 2, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow - 2, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow - 1, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
+                                self.__GetCell(StartRow - 1, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
+                                return 10
                 except:
                     pass
         return 0
@@ -210,6 +208,21 @@ class Pattern():
 
     def GetPatternSequence(self):
         return self.__PatternSequence
+
+    def rotate(self, PatternString):
+        string = []
+        for symbol in PatternString:
+            string.append(symbol)
+        rotation1 = string
+        rotation2 = [string[2],string[5],string[8],string[7],string[6],string[3],string[0],string[1],string[4]]
+        rotation3 = [string[8],string[7],string[6],string[3],string[0],string[1],string[2],string[5],string[4]]
+        rotation4 = [string[6],string[3],string[0],string[1],string[2],string[5],string[8],string[7],string[4]]
+        return rotation1, rotation2, rotation3, rotation4
+
+
+
+
+
 
 
 class Cell():

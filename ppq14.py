@@ -88,12 +88,9 @@ class Puzzle():
         while not Finished:
             self.DisplayPuzzle()
             print("Current score: " + str(self.__Score))
+            print(f'You have {self.__SymbolsLeft} symbols left')
             Row = -1
             Valid = False
-            undo_move = input("Do you want to undo the move (y/n)? ")
-            if undo_move == "y":
-                self.old_cell.ChangeSymbolInCell(self.old_symbol)
-                self.__Score -=3
             while not Valid:
                 try:
                     Row = int(input("Enter row number: "))
@@ -109,13 +106,12 @@ class Puzzle():
                 except:
                     pass
             Symbol = self.__GetSymbolFromUser()
-            self.__SymbolsLeft -= 1
+
             CurrentCell = self.__GetCell(Row, Column)
-            self.old_symbol = CurrentCell.GetSymbol()
-            self.old_cell = CurrentCell
             if CurrentCell.CheckSymbolAllowed(Symbol):
                 CurrentCell.ChangeSymbolInCell(Symbol)
                 AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
+                self.__SymbolsLeft -= 1
                 if AmountToAddToScore > 0:
                     self.__Score += AmountToAddToScore
             if self.__SymbolsLeft == 0:
@@ -235,6 +231,8 @@ class Cell():
     def CheckSymbolAllowed(self, SymbolToCheck):
         for Item in self.__SymbolsNotAllowed:
             if Item == SymbolToCheck:
+                return False
+            if not self.IsEmpty():
                 return False
         return True
 
