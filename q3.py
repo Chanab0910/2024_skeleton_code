@@ -53,7 +53,6 @@ class Puzzle():
             TPattern = Pattern("T", "TTT**T**T")
             self.__AllowedPatterns.append(TPattern)
             self.__AllowedSymbols.append("T")
-            self.__AllowedSymbols.append("B")
 
 
     def __LoadPuzzle(self, Filename):
@@ -91,6 +90,7 @@ class Puzzle():
             print("Current score: " + str(self.__Score))
             Row = -1
             Valid = False
+            bomb = input('Do you want to blow up a blocked cell?(y/n): ')
             while not Valid:
                 try:
                     Row = int(input("Enter row number: "))
@@ -105,26 +105,29 @@ class Puzzle():
                     Valid = True
                 except:
                     pass
-            Symbol = self.__GetSymbolFromUser()
-            self.__SymbolsLeft -= 1
-            CurrentCell = self.__GetCell(Row, Column)
-
-            if Symbol == 'B' and type(CurrentCell) == BlockedCell:
-                Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
-                self.__Grid[Index] = Cell()
-                self.__Score -=3
-
-            elif CurrentCell.CheckSymbolAllowed(Symbol):
-                CurrentCell.ChangeSymbolInCell(Symbol)
-                AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
-                if AmountToAddToScore > 0:
-                    self.__Score += AmountToAddToScore
-            if self.__SymbolsLeft == 0:
-                Finished = True
+            if bomb == 'y':
+                self.bomb(Row,Column)
+            else:
+                Symbol = self.__GetSymbolFromUser()
+                self.__SymbolsLeft -= 1
+                CurrentCell = self.__GetCell(Row, Column)
+                if CurrentCell.CheckSymbolAllowed(Symbol):
+                    CurrentCell.ChangeSymbolInCell(Symbol)
+                    AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
+                    if AmountToAddToScore > 0:
+                        self.__Score += AmountToAddToScore
+                if self.__SymbolsLeft == 0:
+                    Finished = True
         print()
         self.DisplayPuzzle()
         print()
         return self.__Score
+
+    def bomb(self, Row, Column):
+        cell = self.__GetCell(Row, Column)
+        cell = Cell()
+        cell.ChangeSymbolInCell(' ')
+        self.__Score-=3
 
     def __GetCell(self, Row, Column):
         Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
@@ -134,6 +137,7 @@ class Puzzle():
             raise IndexError()
 
     def CheckforMatchWithPattern(self, Row, Column):
+        order = [[]]
         for StartRow in range(Row + 2, Row - 1, -1):
             for StartColumn in range(Column - 2, Column + 1):
                 try:

@@ -127,19 +127,28 @@ class Puzzle():
             raise IndexError()
 
     def CheckforMatchWithPattern(self, Row, Column):
+        symbol = self.__GetCell(Row, Column).GetSymbol()
         for StartRow in range(Row + 2, Row - 1, -1):
             for StartColumn in range(Column - 2, Column + 1):
                 try:
                     PatternString = ""
-                    PatternString += self.__GetCell(StartRow, StartColumn).GetSymbol()
-                    PatternString += self.__GetCell(StartRow, StartColumn + 1).GetSymbol()
-                    PatternString += self.__GetCell(StartRow, StartColumn + 2).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 1, StartColumn + 2).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 2, StartColumn + 2).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 2, StartColumn + 1).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 2, StartColumn).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 1, StartColumn).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 1, StartColumn + 1).GetSymbol()
+                    c1 =  self.__GetCell(StartRow, StartColumn)
+                    c2 = self.__GetCell(StartRow, StartColumn + 1)
+                    c3= self.__GetCell(StartRow, StartColumn + 2)
+                    c4= self.__GetCell(StartRow - 1, StartColumn + 2)
+                    c5= self.__GetCell(StartRow - 2, StartColumn + 2)
+                    c6= self.__GetCell(StartRow - 2, StartColumn + 1)
+                    c7= self.__GetCell(StartRow - 2, StartColumn)
+                    c8= self.__GetCell(StartRow - 1, StartColumn)
+                    c9= self.__GetCell(StartRow - 1, StartColumn + 1)
+
+                    cells = [c1,c2,c3,c4,c5,c6,c7,c8,c9]
+
+                    for cell in cells:
+                        PatternString += cell.GetSymbol()
+                        if not cell.CheckSymbolAllowed(symbol):
+                            return 0
+
                     for P in self.__AllowedPatterns:
                         CurrentSymbol = self.__GetCell(Row, Column).GetSymbol()
                         if P.MatchesPattern(PatternString, CurrentSymbol):

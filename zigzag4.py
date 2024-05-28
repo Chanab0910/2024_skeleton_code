@@ -53,6 +53,9 @@ class Puzzle():
             TPattern = Pattern("T", "TTT**T**T")
             self.__AllowedPatterns.append(TPattern)
             self.__AllowedSymbols.append("T")
+            self.num_allowed_Q = random.randint(0,3)
+            self.num_allowed_T = random.randint(0, 3)
+            self.num_allowed_X = random.randint(0, 3)
 
 
     def __LoadPuzzle(self, Filename):
@@ -88,6 +91,9 @@ class Puzzle():
         while not Finished:
             self.DisplayPuzzle()
             print("Current score: " + str(self.__Score))
+            print(f'You have {self.num_allowed_Q} Q patterns left')
+            print(f'You have {self.num_allowed_T} T patterns left')
+            print(f'You have {self.num_allowed_X} X patterns left')
             Row = -1
             Valid = False
             while not Valid:
@@ -127,25 +133,39 @@ class Puzzle():
             raise IndexError()
 
     def CheckforMatchWithPattern(self, Row, Column):
-        for StartRow in range(Row + 2, Row - 1, -1):
-            for StartColumn in range(Column - 2, Column + 1):
-                try:
-                    PatternString = ""
-                    PatternString += self.__GetCell(StartRow, StartColumn).GetSymbol()
-                    PatternString += self.__GetCell(StartRow, StartColumn + 1).GetSymbol()
-                    PatternString += self.__GetCell(StartRow, StartColumn + 2).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 1, StartColumn + 2).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 2, StartColumn + 2).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 2, StartColumn + 1).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 2, StartColumn).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 1, StartColumn).GetSymbol()
-                    PatternString += self.__GetCell(StartRow - 1, StartColumn + 1).GetSymbol()
+        symbol = self.__GetCell(Row, Column).GetSymbol()
+        allowed = True
+        if symbol == 'T':
+            pattern_num = self.num_allowed_T
+            if self.num_allowed_T < 1:
+                allowed = False
+        if symbol == 'Q':
+            pattern_num = self.num_allowed_Q
+            if self.num_allowed_Q < 1:
+                allowed = False
+        if symbol == 'X':
+            pattern_num = self.num_allowed_X
+            if self.num_allowed_X < 1:
+                allowed = False
 
-                    for P in self.__AllowedPatterns:
-                        CurrentSymbol = self.__GetCell(Row, Column).GetSymbol()
-                        rotated_patterns = P.rotate(PatternString)
-                        for rotate in rotated_patterns:
-                            if P.MatchesPattern(rotate, CurrentSymbol):
+
+        if allowed:
+            for StartRow in range(Row + 2, Row - 1, -1):
+                for StartColumn in range(Column - 2, Column + 1):
+                    try:
+                        PatternString = ""
+                        PatternString += self.__GetCell(StartRow, StartColumn).GetSymbol()
+                        PatternString += self.__GetCell(StartRow, StartColumn + 1).GetSymbol()
+                        PatternString += self.__GetCell(StartRow, StartColumn + 2).GetSymbol()
+                        PatternString += self.__GetCell(StartRow - 1, StartColumn + 2).GetSymbol()
+                        PatternString += self.__GetCell(StartRow - 2, StartColumn + 2).GetSymbol()
+                        PatternString += self.__GetCell(StartRow - 2, StartColumn + 1).GetSymbol()
+                        PatternString += self.__GetCell(StartRow - 2, StartColumn).GetSymbol()
+                        PatternString += self.__GetCell(StartRow - 1, StartColumn).GetSymbol()
+                        PatternString += self.__GetCell(StartRow - 1, StartColumn + 1).GetSymbol()
+                        for P in self.__AllowedPatterns:
+                            CurrentSymbol = self.__GetCell(Row, Column).GetSymbol()
+                            if P.MatchesPattern(PatternString, CurrentSymbol):
                                 self.__GetCell(StartRow, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                                 self.__GetCell(StartRow, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
                                 self.__GetCell(StartRow, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
@@ -155,9 +175,16 @@ class Puzzle():
                                 self.__GetCell(StartRow - 2, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                                 self.__GetCell(StartRow - 1, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                                 self.__GetCell(StartRow - 1, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
+                                if symbol == 'X':
+                                    self.num_allowed_X -= 1
+                                if symbol == 'T':
+                                    self.num_allowed_T -= 1
+                                if symbol == 'Q':
+                                    self.num_allowed_Q -= 1
+
                                 return 10
-                except:
-                    pass
+                    except:
+                        pass
         return 0
 
     def __GetSymbolFromUser(self):
@@ -207,21 +234,6 @@ class Pattern():
 
     def GetPatternSequence(self):
         return self.__PatternSequence
-
-    def rotate(self, PatternString):
-        string = []
-        for symbol in PatternString:
-            string.append(symbol)
-        rotation1 = string
-        rotation2 = [string[2],string[3],string[4],string[5],string[6],string[7],string[0],string[1],string[8]]
-        rotation3 = [string[4],string[5],string[6],string[7],string[0],string[1],string[2],string[3],string[8]]
-        rotation4 = [string[6],string[7],string[0],string[1],string[2],string[3],string[4],string[7],string[8]]
-        return rotation1, rotation2, rotation3, rotation4
-
-
-
-
-
 
 
 class Cell():
