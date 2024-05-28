@@ -86,6 +86,26 @@ class Puzzle():
     def AttemptPuzzle(self):
         Finished = False
         while not Finished:
+            swamp_num = random.randint(1, 4)
+            if swamp_num == 3:
+                swamp = True
+            else:
+                swamp = False
+            swamp = True
+            if swamp:
+                n = random.randint(1,4)
+                for i in range(n):
+                    blocked = True
+                    while blocked:
+                        row = random.randint(1, self.__GridSize)
+                        column = random.randint(1, self.__GridSize)
+                        location = self.__Grid[row * column + 1]
+                        if type(location) != BlockedCell():
+                            location = BlockedCell()
+                            location.UpdateCell()
+                            blocked = False
+
+
             self.DisplayPuzzle()
             print("Current score: " + str(self.__Score))
             Row = -1
@@ -236,7 +256,7 @@ class Cell():
         self.__SymbolsNotAllowed.append(SymbolToAdd)
 
     def UpdateCell(self):
-        pass
+        self._Symbol = '!'
 
 
 class BlockedCell(Cell):
