@@ -93,16 +93,15 @@ class Puzzle():
                 swamp = False
             swamp = True
             if swamp:
-                n = random.randint(1,4)
+                n = random.randint(1,3)
                 for i in range(n):
                     blocked = True
                     while blocked:
                         row = random.randint(1, self.__GridSize)
                         column = random.randint(1, self.__GridSize)
-                        location = self.__Grid[row * column + 1]
-                        if type(location) != BlockedCell():
-                            location = BlockedCell()
-                            location.UpdateCell()
+                        if type(self.__GetCell(row,column)) != BlockedCell():
+                            self.__Grid[row * column + 1] = BlockedCell()
+                            self.__Grid[row * column + 1].UpdateCell()
                             blocked = False
 
 
